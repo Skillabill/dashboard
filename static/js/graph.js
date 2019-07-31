@@ -134,8 +134,9 @@ function show_rank_distribution(ndx) {
             }
         );
     }
-
-    var ProfByGender = rankByGender(dim, "Prof");
+    
+    var dim = ndx.dimension(dc.pluck("sex"));
+    var profByGender = rankByGender(dim, "Prof");
     var asstProfByGender = rankByGender(dim, "AsstProf");
     var assocProfByGender = rankByGender(dim, "AssocProf");
     
@@ -147,7 +148,7 @@ function show_rank_distribution(ndx) {
         .stack(asstProfByGender, "Asst Prof")
         .stack(assocProfByGender, "Assoc Prof")
         .valueAccessor(function (d) {
-            if(d.value.total > 0),{
+            if(d.value.total > 0) {
                 return (d.value.match / d.value.total) * 100;
             } else {
                 return 0;
