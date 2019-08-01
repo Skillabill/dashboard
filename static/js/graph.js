@@ -80,8 +80,8 @@ function show_gender_balance(ndx) {
     var group = dim.group();
     
     dc.barChart("#gender-balance")
-        .width(400)
-        .height(300)
+        .width(350)
+        .height(250)
         .margins({top: 10, right: 50, bottom: 30, left: 50})
         .dimension(dim)
         .group(group)
@@ -122,8 +122,8 @@ function show_average_salary(ndx) {
     var averageSalaryByGender = dim.group().reduce(add_item, remove_item, initialise);
 
     dc.barChart("#average-salary")
-        .width(400)
-        .height(300)
+        .width(350)
+        .height(250)
         .margins({top: 10, right: 50, bottom: 30, left: 50})
         .dimension(dim)
         .group(averageSalaryByGender)
@@ -169,12 +169,13 @@ function show_rank_distribution(ndx) {
     var assocProfByGender = rankByGender(dim, "AssocProf");
     
     dc.barChart("#rank-distribution")
-        .width(400)
-        .height(300)
+        .width(350)
+        .height(250)
         .dimension(dim)
         .group(profByGender, "Prof")
         .stack(asstProfByGender, "Asst Prof")
         .stack(assocProfByGender, "Assoc Prof")
+        .xAxisLabel("Gender")
         .valueAccessor(function(d) {
             if(d.value.total > 0) {
                 return (d.value.match / d.value.total) * 100;
