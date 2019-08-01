@@ -1,33 +1,33 @@
 queue()
     .defer(d3.csv, "data/Salaries.csv")
     .await(makeGraphs);
-
+    
 function makeGraphs(error, salaryData) {
     var ndx = crossfilter(salaryData);
-
-    salaryData.forEach(function(d) {
+    
+    salaryData.forEach(function(d){
         d.salary = parseInt(d.salary);
-        d.yrs_service = parseInt(d["yrs_service"])
-    });
-
+        d.yrs_service = parseInt(d["yrs.service"]);
+    })
+    
     show_discipline_selector(ndx);
-
+    
     show_percent_that_are_professors(ndx, "Female", "#percent-of-women-professors");
     show_percent_that_are_professors(ndx, "Male", "#percent-of-men-professors");
-
+    
     show_gender_balance(ndx);
-    show_average_salaries(ndx);
+    show_average_salary(ndx);
     show_rank_distribution(ndx);
 
     show_service_to_salary_correlation(ndx);
-
+    
     dc.renderAll();
 }
 
 function show_discipline_selector(ndx) {
     var dim = ndx.dimension(dc.pluck('discipline'));
     var group = dim.group();
-
+    
     dc.selectMenu("#discipline-selector")
         .dimension(dim)
         .group(group);
@@ -38,7 +38,7 @@ function show_percent_that_are_professors(ndx, gender, element) {
         function(p, v) {
             if (v.sex === gender) {
                 p.count++;
-                if (v.rank === "Prof") {
+                if(v.rank === "Prof") {
                     p.are_prof++;
                 }
             }
@@ -47,24 +47,23 @@ function show_percent_that_are_professors(ndx, gender, element) {
         function(p, v) {
             if (v.sex === gender) {
                 p.count--;
-                if (v.rank === "Prof") {
+                if(v.rank === "Prof") {
                     p.are_prof--;
                 }
             }
             return p;
         },
         function() {
-            return { count: 0, are_prof: 0 };
+            return {count: 0, are_prof: 0};    
         },
     );
-
+    
     dc.numberDisplay(element)
         .formatNumber(d3.format(".2%"))
-        .valueAccessor(function(d) {
+        .valueAccessor(function (d) {
             if (d.count == 0) {
                 return 0;
-            }
-            else {
+            } else {
                 return (d.are_prof / d.count);
             }
         })
@@ -74,11 +73,11 @@ function show_percent_that_are_professors(ndx, gender, element) {
 function show_gender_balance(ndx) {
     var dim = ndx.dimension(dc.pluck('sex'));
     var group = dim.group();
-
+    
     dc.barChart("#gender-balance")
         .width(400)
         .height(300)
-        .margins({ top: 10, right: 50, bottom: 30, left: 50 })
+        .margins({top: 10, right: 50, bottom: 30, left: 50})
         .dimension(dim)
         .group(group)
         .transitionDuration(500)
@@ -88,10 +87,9 @@ function show_gender_balance(ndx) {
         .yAxis().ticks(20);
 }
 
-
 function show_average_salary(ndx) {
     var dim = ndx.dimension(dc.pluck('sex'));
-
+    
     function add_item(p, v) {
         p.count++;
         p.total += v.salary;
@@ -101,19 +99,18 @@ function show_average_salary(ndx) {
 
     function remove_item(p, v) {
         p.count--;
-        if (p.count == 0) {
+        if(p.count == 0) {
             p.total = 0;
             p.average = 0;
-        }
-        else {
+        } else {
             p.total -= v.salary;
             p.average = p.total / p.count;
         }
         return p;
     }
-
+    
     function initialise() {
-        return { count: 0, total: 0, average: 0 };
+        return {count: 0, total: 0, average: 0};
     }
 
     var averageSalaryByGender = dim.group().reduce(add_item, remove_item, initialise);
@@ -121,10 +118,10 @@ function show_average_salary(ndx) {
     dc.barChart("#average-salary")
         .width(400)
         .height(300)
-        .margins({ top: 10, right: 50, bottom: 30, left: 50 })
+        .margins({top: 10, right: 50, bottom: 30, left: 50})
         .dimension(dim)
         .group(averageSalaryByGender)
-        .valueAccessor(function(d) {
+        .valueAccessor(function(d){
             return d.value.average.toFixed(2);
         })
         .transitionDuration(500)
